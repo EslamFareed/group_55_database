@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -38,9 +39,12 @@ class AuthCubit extends Cubit<AuthState> {
           email: email, password: pass);
 
       if (userData.user != null) {
+        String? token = await FirebaseMessaging.instance.getToken();
+
         await firestore.collection("users").doc(userData.user!.uid).set({
           "email": email,
           "name": name,
+          "token": token,
         });
         emit(SuccessCreateAccountState());
       } else {
